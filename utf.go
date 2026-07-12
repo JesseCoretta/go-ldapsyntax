@@ -65,10 +65,10 @@ func (r UTF8String) String() string { return string(r) }
 func (r UTF8String) IsZero() bool   { return len(r) == 0 }
 
 var (
-	runeLen  func(rune) int                          = utf8.RuneLen
-	decRune  func([]byte) (rune, int)                = utf8.DecodeRune
-	utf8OK   func(string) bool                       = utf8.ValidString
-	utf16Enc func([]rune) []uint16                   = utf16.Encode
+	runeLen  func(rune) int           = utf8.RuneLen
+	decRune  func([]byte) (rune, int) = utf8.DecodeRune
+	utf8OK   func(string) bool        = utf8.ValidString
+	utf16Enc func([]rune) []uint16    = utf16.Encode
 )
 
 var runeSelf rune = utf8.RuneSelf

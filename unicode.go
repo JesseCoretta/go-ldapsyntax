@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	sfold    func(rune) rune                         = unicode.SimpleFold
-	isPunct  func(rune) bool                         = unicode.IsPunct
+	sfold   func(rune) rune = unicode.SimpleFold
+	isPunct func(rune) bool = unicode.IsPunct
 )
 
 var t61NonContiguous []rune
@@ -31,11 +31,11 @@ var (
 
 var telephoneNumberRunes []rune
 
-func isDigit(r rune) bool { return '0' <= r && r <= '9' }
+func isDigit(r rune) bool  { return '0' <= r && r <= '9' }
 func isLAlpha(r rune) bool { return 'a' <= r && r <= 'z' }
 func isUAlpha(r rune) bool { return 'A' <= r && r <= 'Z' }
-func isAlpha(r rune) bool { return isLAlpha(r) || isUAlpha(r) }
-func isAlnum(r rune) bool { return isDigit(r) || isAlpha(r) }
+func isAlpha(r rune) bool  { return isLAlpha(r) || isUAlpha(r) }
+func isAlnum(r rune) bool  { return isDigit(r) || isAlpha(r) }
 
 func isWHSP(ch rune) bool {
 	return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'

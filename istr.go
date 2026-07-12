@@ -130,7 +130,7 @@ func caseIgnoreIA5SubstringsMatch(a, b any) (result bool, err error) {
 var iA5Range *unicode.RangeTable
 
 func init() {
-        iA5Range = &unicode.RangeTable{R16: []unicode.Range16{
-                {0x0000, 0x00FF, 1},
-        }}
+	iA5Range = &unicode.RangeTable{R16: []unicode.Range16{
+		{0x0000, 0x00FF, 1},
+	}}
 }

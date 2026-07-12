@@ -355,30 +355,29 @@ func IsAssertionValue(x any, zeroOK ...bool) bool {
 }
 
 func assertionValueRunes(x any, zok ...bool) (err error) {
-        var raw []rune
-        if raw, err = assertRunes(x, zok...); err != nil {
-                return
-        }
+	var raw []rune
+	if raw, err = assertRunes(x, zok...); err != nil {
+		return
+	}
 
-        _err := errors.New("Invalid assertionvalue characters")
-        for i := 0; i < len(raw) && err == nil; i++ {
-                if raw[i] == '\\' {
-                        // Check if there are at least
-                        // two more characters
-                        if i+3 > len(raw) {
-                                err = _err
-                        } else if !isHex(rune(raw[i+1])) || !isHex(rune(raw[i+2])) {
-                                // the next two characters are not hex
-                                err = _err
-                        }
-                        // Skip the next two characters, as
-                        // we've already vetted them
-                        i += 2
-                } else if !unicode.Is(uTF8SubsetRange, rune(raw[i])) {
-                        err = uTFMB(rune(raw[i]))
-                }
-        }
+	_err := errors.New("Invalid assertionvalue characters")
+	for i := 0; i < len(raw) && err == nil; i++ {
+		if raw[i] == '\\' {
+			// Check if there are at least
+			// two more characters
+			if i+3 > len(raw) {
+				err = _err
+			} else if !isHex(rune(raw[i+1])) || !isHex(rune(raw[i+2])) {
+				// the next two characters are not hex
+				err = _err
+			}
+			// Skip the next two characters, as
+			// we've already vetted them
+			i += 2
+		} else if !unicode.Is(uTF8SubsetRange, rune(raw[i])) {
+			err = uTFMB(rune(raw[i]))
+		}
+	}
 
-        return
+	return
 }
-
