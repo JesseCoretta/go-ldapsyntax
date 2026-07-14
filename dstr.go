@@ -74,8 +74,8 @@ func NewDirectoryString(x any) (DirectoryString, error) {
 	return marshalDirectoryString(x)
 }
 
-func directoryString(x any) (result bool) {
-	_, err := marshalDirectoryString(x)
+func directoryString(x any) (result bool, err error) {
+	_, err = marshalDirectoryString(x)
 	result = err == nil
 	return
 }

@@ -94,18 +94,20 @@ var (
 )
 
 /*
-UTF8String        = StringValue
-StringValue       = dquote *SafeUTF8Character dquote
+IsSafeUTF8 returns a Boolean value alongside an error following an
+analysis of input argument x as a "Safe UTF8" value.
 
-dquote            = %x22 ; " (double quote)
-SafeUTF8Character = %x00-21 / %x23-7F /   ; ASCII minus dquote
+	UTF8String        = StringValue
+	StringValue       = dquote *SafeUTF8Character dquote
+	dquote            = %x22 ; " (double quote)
+	SafeUTF8Character = %x00-21 / %x23-7F /   ; ASCII minus dquote
 
 	dquote dquote /       ; escaped double quote
 	%xC0-DF %x80-BF /     ; 2 byte UTF-8 character
 	%xE0-EF 2(%x80-BF) /  ; 3 byte UTF-8 character
 	%xF0-F7 3(%x80-BF)    ; 4 byte UTF-8 character
 */
-func IsSafeUTF8(x any) (err error) {
+func IsSafeUTF8(x any) (result bool, err error) {
 	var raw []rune
 	if raw, err = assertRunes(x); err != nil {
 		return
@@ -133,6 +135,8 @@ func IsSafeUTF8(x any) (err error) {
 			err = funcs[rL](string(r))
 		}
 	}
+
+	result = err == nil
 
 	return
 }
