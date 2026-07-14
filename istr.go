@@ -2,7 +2,6 @@ package syntax
 
 import (
 	"errors"
-	"strings"
 	"unicode"
 )
 
@@ -35,8 +34,8 @@ func NewIA5String(x any) (ia5 IA5String, err error) {
 	return marshalIA5String(x)
 }
 
-func iA5String(x any) (result bool) {
-	_, err := marshalIA5String(x)
+func iA5String(x any) (result bool, err error) {
+	_, err = marshalIA5String(x)
 	result = err == nil
 	return
 }
@@ -64,64 +63,6 @@ func checkIA5String(raw string) (err error) {
 		if !unicode.Is(iA5Range, char) {
 			err = errors.New("Invalid IA5 String character: " + string(char))
 		}
-	}
-
-	return
-}
-
-func caseExactIA5Match(a, b any) (bool, error) {
-	return caseBasedIA5Match(a, b, true)
-}
-
-func caseIgnoreIA5Match(a, b any) (bool, error) {
-	return caseBasedIA5Match(a, b, false)
-}
-
-func caseBasedIA5Match(a, b any, caseExact bool) (result bool, err error) {
-	var str1, str2 string
-	if str1, err = assertString(a, 1, "ia5String"); err != nil {
-		return
-	}
-
-	if str2, err = assertString(b, 1, "ia5String"); err != nil {
-		return
-	}
-
-	if err = checkIA5String(str1); err == nil {
-		if err = checkIA5String(str2); err == nil {
-			if caseExact {
-				result = str1 == str2
-			} else {
-				result = strings.EqualFold(str1, str2)
-			}
-		}
-	}
-
-	return
-}
-
-func prepareIA5StringAssertion(a, b any) (str1, str2 string, err error) {
-	assertIA5 := func(x any) (i string, err error) {
-		var raw string
-		if raw, err = assertString(x, 1, "IA5String"); err == nil {
-			if err = checkIA5String(raw); err == nil {
-				i = raw
-			}
-		}
-		return
-	}
-
-	if str1, err = assertIA5(a); err == nil {
-		str2, err = assertIA5(b)
-	}
-
-	return
-}
-
-func caseIgnoreIA5SubstringsMatch(a, b any) (result bool, err error) {
-	var str1, str2 string
-	if str1, str2, err = prepareIA5StringAssertion(a, b); err == nil {
-		result, err = caseIgnoreSubstringsMatch(str1, str2)
 	}
 
 	return

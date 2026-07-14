@@ -49,8 +49,8 @@ func TestIA5String_CaseMatch(t *testing.T) {
 }
 
 func TestIA5String_codecov(t *testing.T) {
-	_ = iA5String("HELLO.")
-	_ = iA5String("jesse.coretta@icloud.com")
+	_, _ = iA5String("HELLO.")
+	_, _ = iA5String("jesse.coretta@icloud.com")
 	if err := checkIA5String(`jesse.coretta@icloud.com`); err != nil {
 		t.Errorf("%s failed: %v", t.Name(), err)
 		return

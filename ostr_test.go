@@ -44,7 +44,7 @@ func TestOctetString(t *testing.T) {
 		return
 	}
 
-	result, err = octetStringOrderingMatch(octet1, octet2, GreaterOrEqual)
+	result, err = octetStringOrderingMatch(octet1, GreaterOrEqual, octet2)
 	if err != nil {
 		t.Errorf("%s failed: %v", t.Name(), err)
 	} else if !result {
@@ -58,18 +58,18 @@ func TestOctetString(t *testing.T) {
 	_, _ = octetStringMatch([]byte{}, []byte{0x0})
 	_, _ = octetStringMatch([]byte{0x0}, []byte{})
 
-	_, _ = octetStringOrderingMatch([]byte{0x01}, []byte{0x01, 0x02}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x01}, []byte{0x01, 0x02}, GreaterOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x01, 0x03}, []byte{0x01, 0x02}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x01, 0x02}, []byte{0x02}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x01, 0x02}, []byte{0x02}, GreaterOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x01, 0x03}, []byte{0x02, 0x01}, GreaterOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{}, []byte{}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{}, struct{}{}, LessOrEqual)
-	_, _ = octetStringOrderingMatch(struct{}{}, []byte{}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x0}, []byte{0x1, 0x2}, LessOrEqual)
-	_, _ = octetStringOrderingMatch([]byte{0x1}, []byte{}, LessOrEqual)
+	_, _ = octetStringOrderingMatch([]byte{0x01}, LessOrEqual, []byte{0x01, 0x02})
+	_, _ = octetStringOrderingMatch([]byte{0x01}, GreaterOrEqual, []byte{0x01, 0x02})
+	_, _ = octetStringOrderingMatch([]byte{0x01, 0x03}, LessOrEqual, []byte{0x01, 0x02})
+	_, _ = octetStringOrderingMatch([]byte{0x01, 0x02}, LessOrEqual, []byte{0x02})
+	_, _ = octetStringOrderingMatch([]byte{0x01, 0x02}, GreaterOrEqual, []byte{0x02})
+	_, _ = octetStringOrderingMatch([]byte{0x01, 0x03}, GreaterOrEqual, []byte{0x02, 0x01})
+	_, _ = octetStringOrderingMatch([]byte{}, LessOrEqual, []byte{})
+	_, _ = octetStringOrderingMatch([]byte{}, LessOrEqual, struct{}{})
+	_, _ = octetStringOrderingMatch(struct{}{}, LessOrEqual, []byte{})
+	_, _ = octetStringOrderingMatch([]byte{0x0}, LessOrEqual, []byte{0x1, 0x2})
+	_, _ = octetStringOrderingMatch([]byte{0x1}, LessOrEqual, []byte{})
 
-	_ = octetString([]byte{})
-	_ = octetString([]byte{0x0, 0x1, 0x2})
+	_, _ = octetString([]byte{})
+	_, _ = octetString([]byte{0x0, 0x1, 0x2})
 }

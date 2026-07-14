@@ -27,8 +27,8 @@ IsZero returns a Boolean value indicative of a nil receiver state.
 */
 func (r NumericString) IsZero() bool { return len(r) == 0 }
 
-func numericString(x any) (result bool) {
-	_, err := marshalNumericString(x)
+func numericString(x any) (result bool, err error) {
+	_, err = marshalNumericString(x)
 	result = err == nil
 	return
 }
@@ -113,7 +113,7 @@ func numericStringMatch(a, b any) (result bool, err error) {
 	return
 }
 
-func numericStringOrderingMatch(a, b any, operator byte) (result bool, err error) {
+func numericStringOrderingMatch(a any, operator byte, b any) (result bool, err error) {
 	var str1, str2 string
 	if str1, str2, err = prepareNumericStringAssertion(a, b); err == nil {
 		if operator == GreaterOrEqual {

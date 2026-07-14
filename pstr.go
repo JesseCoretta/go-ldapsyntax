@@ -50,8 +50,8 @@ IsZero returns a Boolean value indicative of a nil receiver state.
 */
 func (r PrintableString) IsZero() bool { return len(r) == 0 }
 
-func printableString(x any) (result bool) {
-	_, err := marshalPrintableString(x)
+func printableString(x any) (result bool, err error) {
+	_, err = marshalPrintableString(x)
 	result = err == nil
 	return
 }

@@ -44,8 +44,8 @@ func NewOctetString(x any) (OctetString, error) {
 	return marshalOctetString(x)
 }
 
-func octetString(x any) (result bool) {
-	_, err := marshalOctetString(x)
+func octetString(x any) (result bool, err error) {
+	_, err = marshalOctetString(x)
 	result = err == nil
 	return
 }
@@ -119,7 +119,7 @@ func octetStringMatch(a, b any) (result bool, err error) {
 	return
 }
 
-func octetStringOrderingMatch(a, b any, operator byte) (result bool, err error) {
+func octetStringOrderingMatch(a any, operator byte, b any) (result bool, err error) {
 	var str1, str2 []byte
 
 	if str1, err = assertOctetString(a); err != nil {

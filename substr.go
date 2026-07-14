@@ -114,8 +114,8 @@ func New(x any) (SubstringAssertion, error) {
 	return marshalSubstringAssertion(x)
 }
 
-func substringAssertion(x any) (result bool) {
-	_, err := marshalSubstringAssertion(x)
+func substringAssertion(x any) (result bool, err error) {
+	_, err = marshalSubstringAssertion(x)
 	result = err == nil
 	return
 }
@@ -229,115 +229,6 @@ func assertSubstringAssertion(x any) (value string, err error) {
 		value = tv.String()
 	default:
 		err = errorBadType("SubstringAssertion")
-	}
-
-	return
-}
-
-/*
-caseIgnoreSubstringsMatch implements [§ 4.2.13 of RFC 4517].
-
-OID: 2.5.13.4.
-
-[§ 4.2.13 of RFC 4517]: https://datatracker.ietf.org/doc/html/rfc4517#section-4.2.13
-*/
-func caseIgnoreSubstringsMatch(a, b any) (result bool, err error) {
-	result, err = substringsMatch(a, b, true)
-	return
-}
-
-/*
-caseIgnoreSubstringsMatch implements [§ 4.2.6 of RFC 4517].
-
-OID: 2.5.13.7.
-
-[§ 4.2.6 of RFC 4517]: https://datatracker.ietf.org/doc/html/rfc4517#section-4.2.6
-*/
-func caseExactSubstringsMatch(a, b any) (result bool, err error) {
-	result, err = substringsMatch(a, b, false)
-	return
-}
-
-func substringsMatch(a, b any, caseIgnore ...bool) (result bool, err error) {
-	var value string
-	if value, err = assertString(a, 1, "actual value"); err != nil {
-		return
-	}
-
-	var B SubstringAssertion
-	if B, err = marshalSubstringAssertion(b); err != nil {
-		return
-	}
-
-	caseHandler := func(val string) string { return val }
-
-	if len(caseIgnore) > 0 {
-		if caseIgnore[0] {
-			caseHandler = strings.ToLower
-		}
-	}
-
-	value = caseHandler(value)
-
-	if B.Any == nil {
-		err = errorBadType("Missing SubstringAssertion.Any")
-		return
-	}
-
-	if B.Initial != nil {
-		initialStr := caseHandler(string(B.Initial))
-
-		if !strings.HasPrefix(value, initialStr) {
-			return
-		}
-		value = strings.TrimPrefix(value, initialStr)
-	}
-
-	anyStr := `*` + strings.Trim(caseHandler(string(B.Any)), `*`) + `*`
-	substrings := strings.Split(anyStr, "*")
-	for _, substr := range substrings {
-		index := strings.Index(value, substr)
-		if index == -1 {
-			return
-		}
-		value = value[index+len(substr):]
-	}
-
-	if B.Final != nil {
-		finalStr := caseHandler(string(B.Final))
-		result = strings.HasSuffix(value, finalStr)
-		return
-	}
-
-	result = true
-	return
-}
-
-func prepareStringListAssertion(a, b any) (str1, str2 string, err error) {
-	assertSubstringsList := func(x any) (list string, err error) {
-		var ok bool
-		var slices []string
-		if slices, ok = x.([]string); ok {
-			list = strings.Join(slices, ``)
-			list = strings.ReplaceAll(list, `\\`, ``)
-			list = strings.ReplaceAll(list, `$`, ``)
-		} else {
-			errorBadType("substringslist")
-		}
-		return
-	}
-
-	if str1, err = assertSubstringsList(a); err == nil {
-		str2, err = assertSubstringsList(b)
-	}
-
-	return
-}
-
-func caseIgnoreListSubstringsMatch(a, b any) (result bool, err error) {
-	var str1, str2 string
-	if str1, str2, err = prepareStringListAssertion(a, b); err == nil {
-		result, err = caseIgnoreSubstringsMatch(str1, str2)
 	}
 
 	return

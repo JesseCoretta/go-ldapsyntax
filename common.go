@@ -2,19 +2,8 @@ package syntax
 
 import (
 	"reflect"
+	"strings"
 )
-
-/*
-GreaterOrEqual (>=), when input to an [OrderingRuleAssertion] function,
-results in a greater or equal (GE) comparison.
-*/
-const GreaterOrEqual byte = 0x0
-
-/*
-LessOrEqual (<=), when input to an [OrderingRuleAssertion] function,
-results in a less or equal (LE) comparison.
-*/
-const LessOrEqual byte = 0x1
 
 /*
 assertFirstStructField is a private function used for
@@ -111,6 +100,34 @@ func castUint64(x any) (i uint64, err error) {
 		i = tv
 	default:
 		err = errorBadType("castUint64")
+	}
+
+	return
+}
+
+func strInSlice(r any, slice []string, cEM ...bool) (match bool) {
+	// assume caseIgnoreMatch by default
+	funk := strings.EqualFold
+	if len(cEM) > 0 {
+		if cEM[0] {
+			// use caseExactMatch
+			funk = func(a, b string) bool {
+				return a == b
+			}
+		}
+	}
+
+	switch tv := r.(type) {
+	case string:
+		for i := 0; i < len(slice) && !match; i++ {
+			match = funk(tv, slice[i])
+		}
+	case []string:
+		for i := 0; i < len(tv) && !match; i++ {
+			for j := 0; j < len(slice) && !match; j++ {
+				match = funk(tv[i], slice[j])
+			}
+		}
 	}
 
 	return

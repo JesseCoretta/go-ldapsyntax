@@ -16,7 +16,7 @@ func TestNumericString(t *testing.T) {
 			t.Errorf("%s failed: %v", t.Name(), err)
 		} else {
 			_ = ns.String()
-			if !numericString(raw) {
+			if b, _ := numericString(raw); !b {
 				t.Errorf("%s failed: failed to parse numericString", t.Name())
 			}
 		}
@@ -44,7 +44,7 @@ func TestNumericString_NumericStringMatch(t *testing.T) {
 }
 
 func TestNumericString_OrderingMatch(t *testing.T) {
-	result, err := numericStringOrderingMatch(`01 47 47`, `01 37 47`, LessOrEqual)
+	result, err := numericStringOrderingMatch(`01 47 47`, LessOrEqual, `01 37 47`)
 	if err != nil {
 		t.Errorf("%s failed: %v", t.Name(), err)
 		return
@@ -53,7 +53,7 @@ func TestNumericString_OrderingMatch(t *testing.T) {
 		return
 	}
 
-	result, err = numericStringOrderingMatch(`01 47 47`, `01 37 47`, GreaterOrEqual)
+	result, err = numericStringOrderingMatch(`01 47 47`, GreaterOrEqual, `01 37 47`)
 	if err != nil {
 		t.Errorf("%s failed: %v", t.Name(), err)
 		return

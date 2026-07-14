@@ -33,8 +33,8 @@ IsZero returns a Boolean value indicative of a nil receiver state.
 */
 func (r CountryString) IsZero() bool { return len(r) == 0 }
 
-func countryString(x any) (result bool) {
-	_, err := marshalCountryString(x)
+func countryString(x any) (result bool, err error) {
+	_, err = marshalCountryString(x)
 	result = err == nil
 	return
 }
