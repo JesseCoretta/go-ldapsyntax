@@ -8,10 +8,7 @@ syntax.
 Each string map index should be the OID of the relevant LDAP syntax.
 The value should be a closure function or method with a signature of:
 
-	func(any) error
-
-Entries registered in this variable will be called via the [LDAPSyntax.Verify]
-method.
+	func(any) (bool, error)
 
 Prior to use, this map instance should be initialized by the caller.
 */
@@ -45,10 +42,11 @@ func init() {
 		`1.3.6.1.1.16.1`:                uUID,
 	}
 
-	// I honestly don't have a clue what my plan should be for fax data.
+	// I honestly don't have a clue what
+	// my plan should be for fax data.
 	//`1.3.6.1.4.1.1466.115.121.1.23`: fax,
 
-	// figure out DN plan
+	// figure out DN plan (roll my own or go-ldap/DN?)
 	//`1.3.6.1.4.1.1466.115.121.1.12`: dN,
 	//`1.3.6.1.4.1.1466.115.121.1.34`: nameAndOptionalUID,
 
