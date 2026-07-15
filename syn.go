@@ -24,7 +24,7 @@ func init() {
 		`1.3.6.1.4.1.1466.115.121.1.21`: enhancedGuide,
 		`1.3.6.1.4.1.1466.115.121.1.22`: facsimileTelephoneNumber,
 		`1.3.6.1.4.1.1466.115.121.1.24`: generalizedTime,
-		`1.3.6.1.4.1.1466.115.121.1.25`: guide,
+		`1.3.6.1.4.1.1466.115.121.1.25`: guide, // OBSOLETE, use enhancedGuide
 		`1.3.6.1.4.1.1466.115.121.1.26`: iA5String,
 		`1.3.6.1.4.1.1466.115.121.1.27`: integer,
 		`1.3.6.1.4.1.1466.115.121.1.28`: jPEG,
@@ -38,25 +38,15 @@ func init() {
 		`1.3.6.1.4.1.1466.115.121.1.50`: telephoneNumber,
 		`1.3.6.1.4.1.1466.115.121.1.51`: teletexTerminalIdentifier,
 		`1.3.6.1.4.1.1466.115.121.1.52`: telexNumber,
-		`1.3.6.1.4.1.1466.115.121.1.53`: uTCTime,
+		`1.3.6.1.4.1.1466.115.121.1.53`: uTCTime, // OBSOLETE, use generalizedTime
 		`1.3.6.1.1.16.1`:                uUID,
 	}
 
-	// I honestly don't have a clue what
+	// TODO: I honestly don't have a clue what
 	// my plan should be for fax data.
 	//`1.3.6.1.4.1.1466.115.121.1.23`: fax,
 
-	// figure out DN plan (roll my own or go-ldap/DN?)
+	// TODO: figure out DN plan (roll my own or go-ldap/DN?)
 	//`1.3.6.1.4.1.1466.115.121.1.12`: dN,
 	//`1.3.6.1.4.1.1466.115.121.1.34`: nameAndOptionalUID,
-
-	// move to go-ldapschema
-	//`1.3.6.1.4.1.1466.115.121.1.3`:  attributeTypeDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.16`: dITContentRuleDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.17`: dITStructureRuleDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.30`: matchingRuleDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.31`: matchingRuleUseDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.35`: nameFormDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.37`: objectClassDescription,
-	//`1.3.6.1.4.1.1466.115.121.1.54`: lDAPSyntaxDescription,
 }

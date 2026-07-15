@@ -98,7 +98,7 @@ func init() {
 		"1.3.6.1.1.16.3":             OrderingRuleAssertion(uuidOrderingMatch),
 	}
 
-	// TODO: Must first decide my plans for DN (roll my own or go-ldap/DN?)
+	// TODO: figure out DN plan (roll my own or go-ldap/DN?)
 	//"2.5.13.1":                   EqualityRuleAssertion(distinguishedNameMatch),
 	//"2.5.13.23":                  EqualityRuleAssertion(uniqueMemberMatch),
 }
