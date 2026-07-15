@@ -46,3 +46,18 @@ func boolean(x any) (result bool, err error) {
 	result = err == nil
 	return
 }
+
+func booleanMatch(realValue, assertionValue any) (result bool, err error) {
+	var a, b bool
+	if a, err = NewBoolean(realValue); err == nil {
+		if b, err = NewBoolean(assertionValue); err == nil {
+			result = a == b
+		}
+	}
+
+	if err != nil {
+		err = errors.New("UNDEFINED: " + err.Error())
+	}
+
+	return
+}

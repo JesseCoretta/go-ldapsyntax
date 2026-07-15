@@ -644,6 +644,99 @@ func uint64ToNumberForm(num uint64) (i numberForm) {
 	return
 }
 
+func objectIdentifierMatch(a, b any) (result bool, err error) {
+	var (
+		oid1, oid2 ObjectIdentifier
+		err1, err2 error
+	)
+
+	oid1, err1 = NewObjectIdentifier(a)
+	oid2, err2 = NewObjectIdentifier(b)
+
+	if err1 == nil && err2 == nil {
+		result = oid1.Eq(oid2)
+		return
+	}
+
+	if OIDMap == nil || len(OIDMap) == 0 {
+		err = errorUnknownOIDDescr
+		return
+	}
+
+	if err1 != nil {
+		oid1, err = resolveDescrToOID(a)
+	}
+
+	if err2 != nil {
+		oid2, err = resolveDescrToOID(b)
+	}
+
+	result = oid1.Eq(oid2) && err == nil
+
+	return
+}
+
+func objectIdentifierFirstComponentMatch(sequence, assertionValue any) (result bool, err error) {
+
+	// Use reflection to handle the sequence (a), which must
+	// only be one of the following struct types:
+	//
+	//   - Attribute Type Description
+	//   - LDAP Syntax Description
+	//   - Matching Rule Description
+	//   - Matching Rule Use Description
+	//   - Object Class Description
+	//   - DIT Content Rule Description
+	//   - Name Form Description
+	//
+	// The first component is extracted as componentValue,
+	// which must only be an object identifier in order for
+	// the objectIdentifierMatch call (below) to be successful.
+	componentValue := assertFirstStructField(sequence)
+	if componentValue == nil {
+		err = errors.New("not a valid sequence, or sequence has no fields")
+		return
+	}
+
+	result, err = objectIdentifierMatch(componentValue, assertionValue)
+
+	return
+}
+
+func resolveDescrToOID(a any) (o ObjectIdentifier, err error) {
+	str, ok := a.(string)
+	if !ok {
+		err = errorUnknownOIDDescr
+		return
+	}
+
+	for k, v := range OIDMap {
+		if strInSlice(str, v) {
+			o, err = NewObjectIdentifier(k)
+			break
+		}
+	}
+
+	if err != nil {
+		err = errorUnknownOIDDescr
+	}
+
+	return
+}
+
+/*
+OIDMap contains a user-populated numeric OID to descriptor slices map.
+
+The purpose of this map is to facilitate objectIdentifierMatch equality
+checks in conformance with [§ 4.2.25 of RFC 4517] and [§ 4.2.26 of RFC 4517],
+particularly where descr values -- as opposed to dotted decimal OIDs -- are
+encountered.
+
+[§ 4.2.25 of RFC 4517]: https://www.rfc-editor.org/rfc/rfc4517.html#section-4.2.25
+[§ 4.2.26 of RFC 4517]: https://www.rfc-editor.org/rfc/rfc4517.html#section-4.2.26
+*/
+var OIDMap map[string][]string
+
 var (
 	errorNFNegative = errors.New("NUMBER FORM: negative numbers prohibited")
 	errorNFNil      = errors.New("NUMBER FORM: nil or bogus instance")
@@ -660,5 +753,22 @@ var (
 	errorOIDBadFirstArcs   = errors.New("OBJECT IDENTIFIER: illegal first and/or second level arcs")
 	errorOIDBadEnc         = errors.New("OBJECT IDENTIFIER: bad encoding")
 	errorOIDOIVBadNames    = errors.New("OBJECT IDENTIFIER: no nameForms at input for OIV init")
-	errorOIDOIVBadNamesLen = errors.New("OBJECT IDENTIFIER: nameForm count MUST be equal length for OIV init")
+	errorOIDOIVBadNamesLen = errors.New("OBJECT IDENTIFIER: nameForm ct MUST be equal length for OIV init")
+
+	errorUnknownOIDDescr = errors.New("Undefined: unknown descr for OID")
 )
+
+func init() {
+	OIDMap = make(map[string][]string)
+	for _, slices := range [][]string{
+		{`2.5.4.3`, `cn`, `commonName`},
+		{`2.5.4.6`, `c`, `countryName`},
+		{`2.5.4.10`, `o`, `organizationName`},
+		{`2.5.4.11`, `ou`, `organizationUnitName`},
+		{`2.5.4.33`, `st`, `stateOrProvinceName`},
+		{`2.5.4.41`, `name`},
+		{`2.5.4.49`, `distinguishedName`},
+	} {
+		OIDMap[slices[0]] = slices[1:]
+	}
+}

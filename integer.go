@@ -255,21 +255,7 @@ func (r Integer) cmpBig(b *big.Int) int {
 	return r.bigInt.Cmp(b)
 }
 
-/*
-IsInteger returns a Boolean value indicative of the nf string
-input value representing a valid [Integer], in that:
-
-  - The number is one (1) or more valid digits, and ...
-  - The number is base10 (e.g.: not octal)
-
-Assuming the above requirements are satisfied, any unsigned magnitude
-is considered valid.
-*/
-func IsInteger(i string) bool {
-	return integerCheck(i) == nil
-}
-
-func integerCheck(num string) (err error) {
+func integerStrCheck(num string) (err error) {
 	if len(num) == 0 {
 		err = errorIntNoInput
 		return
@@ -295,12 +281,11 @@ func integerCheck(num string) (err error) {
 }
 
 func strToInteger(num string) (i Integer, err error) {
-	if err = integerCheck(num); err != nil {
+	if err = integerStrCheck(num); err != nil {
 		return
 	}
 
-	_i, _ := newBigInt(0).SetString(num, 10)
-	if _i.IsInt64() {
+	if _i, _ := newBigInt(0).SetString(num, 10); _i.IsInt64() {
 		i = Integer{native: _i.Int64()}
 	} else {
 		i = Integer{big: true, bigInt: _i}
@@ -324,6 +309,87 @@ func uint64ToInteger(num uint64) (i Integer) {
 		i.bigInt = newBigInt(0).SetUint64(num)
 	} else {
 		i.native = int64(num)
+	}
+
+	return
+}
+
+/*
+integerMatch implements [§ 4.2.19 of RFC 4517].
+
+OID: 2.5.13.14
+
+[§ 4.2.19 of RFC 4517]: https://datatracker.ietf.org/doc/html/rfc4517#section-4.2.19
+*/
+func integerMatch(a, b any) (bool, error) {
+	return integerMatchingRule(a, b)
+}
+
+/*
+integerOrderingMatch implements [§ 4.2.20 of RFC 4517].
+
+OID: 2.5.13.15
+
+[§ 4.2.20 of RFC 4517]: https://datatracker.ietf.org/doc/html/rfc4517#section-4.2.20
+*/
+func integerOrderingMatch(a any, operator byte, b any) (bool, error) {
+	return integerMatchingRule(a, b, operator)
+}
+
+/*
+integerFirstComponentMatch implements [§ 4.2.18 of RFC 4517].
+
+OID: 2.5.13.29
+
+[§ 4.2.18 of RFC 4517]: https://datatracker.ietf.org/doc/html/rfc4517#section-4.2.18
+*/
+func integerFirstComponentMatch(a, b any) (result bool, err error) {
+
+	// Use reflection to handle the attribute value.
+	// This value MUST be a struct (SEQUENCE) with
+	// field 0 being a compatible integer type.
+	realValue := assertFirstStructField(a)
+	if realValue == nil {
+		return
+	}
+
+	// field is the integer derived from realValue, and
+	// should represent a compatible integer type.
+	var field Integer
+	if field, err = assertInteger(realValue); err == nil {
+		if assertionValue := assertFirstStructField(b); assertionValue == nil {
+			// b is presumably a compatible integer
+			// type, so assert the value as one.
+			var i Integer
+			i, err = assertInteger(b)
+			result = field.Eq(i) && err == nil
+		} else {
+			// b is a struct, so assert the derived
+			// value from field 0 as a compatible
+			// integer type.
+			var i Integer
+			i, err = assertInteger(assertionValue)
+			result = field.Eq(i) && err == nil
+		}
+	}
+
+	return
+}
+
+func integerMatchingRule(a any, b any, operator ...byte) (result bool, err error) {
+	var i1, i2 Integer
+	if i1, err = assertInteger(a); err == nil {
+		if i2, err = assertInteger(b); err == nil {
+			if len(operator) > 0 {
+				if operator[0] == GreaterOrEqual {
+					result = i1.Ge(i2)
+				} else {
+					result = i1.Le(i2)
+				}
+			} else {
+				result = i1.Eq(i2)
+			}
+		}
 	}
 
 	return

@@ -23,4 +23,16 @@ func TestNewBoolean(t *testing.T) {
 	_, _ = boolean(nil)
 	_, _ = boolean(byte(0x02))
 	_, _ = boolean(-2)
+
+	_, _ = booleanMatch(struct{}{}, true)
+	_, _ = booleanMatch(true, struct{}{})
+	_, _ = booleanMatch(false, true)
+	_, _ = booleanMatch(nil, true)
+
+	if result, err := booleanMatch(`TRUE`, false); err != nil {
+		t.Errorf("%s failed: %v", t.Name(), err)
+	} else if result {
+		t.Errorf("%s failed:\nwant: %t\ngot:  %t", t.Name(), false, result)
+		return
+	}
 }
