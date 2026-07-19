@@ -719,6 +719,8 @@ func resolveDescrToOID(a any) (o ObjectIdentifier, err error) {
 
 	if err != nil {
 		err = errorUnknownOIDDescr
+	} else if o == nil {
+		err = errors.New("OID resolution error: unregistered descriptor " + str)
 	}
 
 	return
